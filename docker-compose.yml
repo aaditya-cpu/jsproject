@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  wiki:
+    image: requarks/wiki:2
+    restart: always
+    environment:
+      - DB_TYPE=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=wikiuser
+      - DB_PASS=wikipassword
+      - DB_NAME=wikidb
+      - WIKI_ADMIN_EMAIL=admin@example.com
+      - WIKI_ADMIN_PASSWORD=adminpassword
+    networks:
+      - app-network
+
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      - POSTGRES_USER=wikiuser
+      - POSTGRES_PASSWORD=wikipassword
+      - POSTGRES_DB=wikidb
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
